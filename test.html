@@ -1,0 +1,121 @@
+CTYPE html>
+<style>
+.switch {
+  width: 10em;
+  border-radius: 9px;
+  color: white;
+  text-align: center;
+}
+.enabled {  background-color: green; }
+.disabled {  background-color: red; } 
+</style>
+<script>
+function $(id) { return document.getElementById(id); }
+var tsPreventDefault = false;
+var tmPreventDefault = false;
+var tePreventDefault = false;
+function tsHandler(event) { if (tsPreventDefault) event.preventDefault(); }
+function tmHandler(event) { if (tmPreventDefault) event.preventDefault(); }
+function teHandler(event) { if (tePreventDefault) event.preventDefault(); }
+var ts=false;
+var tm=false;
+var te=false;
+
+function toggle(enabled, eventName, handler) {
+  if (enabled) {
+    if (handler) document.addEventListener(eventName, handler);
+    $(eventName).classList.remove("disabled");
+    $(eventName).classList.add("enabled");
+  } else {
+    if (handler) document.removeEventListener(eventName, handler);
+    $(eventName).classList.remove("enabled");
+    $(eventName).classList.add("disabled");
+  }
+}
+
+function toggleTouchStart() {
+  ts = !ts;
+  toggle(ts, "touchstart", tsHandler);
+}
+
+function toggleTouchMove() {
+  tm = !tm;
+  toggle(tm, "touchmove", tsHandler);
+}
+
+function toggleTouchEnd() {
+  te = !te;
+  toggle(te, "touchend", tsHandler);
+}
+
+function toggleTSPrevent() {
+  tsPreventDefault = !tsPreventDefault;
+  toggle(tsPreventDefault, "tsPrevent");
+}
+
+function toggleTMPrevent() {
+  tmPreventDefault = !tmPreventDefault;
+  toggle(tmPreventDefault, "tmPrevent");
+}
+
+function toggleTEPrevent() {
+  tePreventDefault = !tePreventDefault;
+  toggle(tePreventDefault, "tePrevent");
+}
+
+var timeoutCount=0;
+var timeoutId=0;
+var timeoutBusyloop=false;
+
+function timeoutLoop() {
+  var start = new Date().getTime();
+  while (new Date().getTime() - start < 500) {}
+  timeoutCount++;
+  $("timeoutCount").textContent = timeoutCount;
+  timeoutId = window.setTimeout(timeoutLoop, 100);
+}
+
+function toggleTimeoutBusyloop() {
+  timeoutBusyloop = !timeoutBusyloop;
+  toggle(timeoutBusyloop, "timeout");
+  if (timeoutBusyloop)
+    timeoutLoop();
+  else
+    window.clearTimeout(timeoutId);
+}
+
+var intervalCount=0;
+var intervalId=0;
+var intervalBusyloop=false;
+
+function intervalLoop() {
+  var start = new Date().getTime();
+  while (new Date().getTime() - start < 500) {}
+  intervalCount++;
+  $("intervalCount").textContent = intervalCount;
+}
+
+function toggleIntervalBusyloop() {
+  intervalBusyloop= !intervalBusyloop;
+  toggle(intervalBusyloop, "interval");
+  if (intervalBusyloop)
+    intervalId = window.setInterval(intervalLoop, 100);
+  else
+    window.clearTimeout(intervalId);
+}
+</script>
+<body style="height:5000px">
+<div id="touchstart" onclick="toggleTouchStart()" class="switch disabled">touchstart</div><br>
+<div id="touchmove" onclick="toggleTouchMove()" class="switch disabled">touchmove</div><br>
+<div id="touchend" onclick="toggleTouchEnd()" class="switch disabled">touchend</div><br>
+
+<div id="timeout" onclick="toggleTimeoutBusyloop()" class="switch disabled">setTimeout 500/100ms</div><span id="timeoutCount">0</span><br>
+<div id="interval" onclick="toggleIntervalBusyloop()" class="switch disabled">setInterval 500/100ms</div><span id="intervalCount">0</span><br>
+<div style="position:absolute; top:8px; left:12em">
+<div id="tsPrevent" onclick="toggleTSPrevent()" class="switch disabled">preventDefault</div><br>
+<div id="tmPrevent" onclick="toggleTMPrevent()" class="switch disabled">preventDefault</div><br>
+<div id="tePrevent" onclick="toggleTEPrevent()" class="switch disabled">preventDefault</div>
+</div>
+</body>
+
+
